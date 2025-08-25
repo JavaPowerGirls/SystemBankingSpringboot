@@ -38,10 +38,10 @@ public class BankAccountController {
         try {
             BankAccount account = accountService.openAccount(requestDTO.clientId, requestDTO.accountType);
             return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(account));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { // errores de negocio
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        } catch (Exception e) { // errores de sistema
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error"); 
         }
     }
 
@@ -51,9 +51,9 @@ public class BankAccountController {
         try {
             accountService.depositToAccount(accountNumber, amount);
             return ResponseEntity.ok("Deposit successful");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { // errores de negocio
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception e) { // errores de sistema
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
     }
@@ -89,7 +89,7 @@ public class BankAccountController {
     public ResponseEntity<?> getAccountsByClientId(@PathVariable Long clientId) {
         try {
             List<BankAccountResponseDTO> accounts = accountService.getAccountsByClientId(clientId)
-                .stream()
+                .stream() // Convierte en stream
                 .map(account -> mapper.toDto(account))
                 .collect(Collectors.toList());
             
