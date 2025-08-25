@@ -28,6 +28,8 @@ public class Client {
     @Column(nullable = false)
     private String email;
 
+    public Client() {}
+
     // Constructor con parametros
     public Client(String firstName, String lastName, String documentId, String email) {
         validate(firstName, lastName, documentId, email);

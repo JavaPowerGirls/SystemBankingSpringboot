@@ -34,6 +34,9 @@ public class BankAccount {
     @Column(name = "client_id", nullable = false)
     private Long clientId; // referencia al cliente
 
+    // Constructor por defecto para JPA/Hibernate
+    public BankAccount() {}
+
     public BankAccount(Long clientId, AccountType accountType) {
         this.clientId = clientId;
         this.accountNumber = generateAccountNumber();
