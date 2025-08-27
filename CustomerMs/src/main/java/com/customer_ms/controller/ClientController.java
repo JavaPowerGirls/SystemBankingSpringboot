@@ -1,11 +1,11 @@
-package com.bankingsystem.controller;
+package com.customer_ms.controller;
 
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bankingsystem.services.ClientService; 
+import com.customer_ms.services.ClientService; 
 
 // API REST para gestionar los clientes del banco
 @RestController

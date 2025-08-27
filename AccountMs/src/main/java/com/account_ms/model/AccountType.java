@@ -1,4 +1,4 @@
-package com.bankingsystem.model;
+package com.account_ms.model;
 
 public enum AccountType {
     SAVINGS(0),       // no permite saldo negativo

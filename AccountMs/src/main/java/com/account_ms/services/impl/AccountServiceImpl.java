@@ -1,9 +1,9 @@
-package com.bankingsystem.services.impl;
+package com.account_ms.services.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bankingsystem.repository.AccountRepository;
-import com.bankingsystem.services.AccountService;
+import com.account_ms.repository.AccountRepository;
+import com.account_ms.services.AccountService;
 
 // Gestiona todas las operaciones bancarias relacionadas con cuentas
 // Permite abrir cuentas, hacer depósitos, retiros y consultas de saldo

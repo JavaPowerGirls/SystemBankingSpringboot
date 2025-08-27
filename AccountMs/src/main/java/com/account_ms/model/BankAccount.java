@@ -1,4 +1,4 @@
-package com.bankingsystem.model;
+package com.account_ms.model;
 
 import java.util.UUID;
 
@@ -15,6 +15,7 @@ import javax.persistence.Table;
 // Una cuenta bancaria pertenece a un cliente y puede ser de tipo AHORROS o CORRIENTE
 @Entity
 @Table(name = "bank_accounts")
+
 public class BankAccount {
 
     @Id

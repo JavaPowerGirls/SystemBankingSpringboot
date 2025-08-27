@@ -1,4 +1,4 @@
-package com.bankingsystem.model;
+package com.customer_ms.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

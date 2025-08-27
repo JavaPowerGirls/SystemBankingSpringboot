@@ -1,10 +1,10 @@
-package com.bankingsystem;
+package com.customer_ms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BankingsystemApplicationTests {
+class CustomerMsApplicationTests {
 
     @Test
     void contextLoads() {

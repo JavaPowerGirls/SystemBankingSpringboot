@@ -1,4 +1,4 @@
-package com.bankingsystem.services;
+package com.customer_ms.services;
  
 
 // Define las operaciones para gestionar los clientes del banco

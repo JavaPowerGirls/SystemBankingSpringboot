@@ -1,9 +1,9 @@
-package com.bankingsystem.services.impl;
+package com.customer_ms.services.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.bankingsystem.repository.ClientRepository;
-import com.bankingsystem.services.ClientService;
+import com.customer_ms.repository.ClientRepository;
+import com.customer_ms.services.ClientService;
 
 
 // Implementa la lógica de negocio para gestionar clientes del banco
