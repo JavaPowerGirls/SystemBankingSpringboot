@@ -51,6 +51,5 @@ Sistema bancario desarrollado en Spring Boot que permite gestionar clientes y cu
 
 - **Jessica Chanco**
 - **Karen Duran Villa**
-- **Leyla Maryam**
 - **Tatiana Paucar**
 
