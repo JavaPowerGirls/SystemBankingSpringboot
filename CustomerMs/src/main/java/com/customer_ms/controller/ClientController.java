@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 // API REST para gestionar los clientes del banco
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/")
+@RequestMapping("/api/Clients")
 public class ClientController {
 
     private final ClientService clientService;
@@ -27,17 +27,16 @@ public class ClientController {
         return listClients();
     }
 
-    @GetMapping("/clients"/{id}")
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
+    @GetMapping("/clients"/{id}")" +
+        "public Client viewClient (@RequestHeader Map<String, String> headers, @PathVariable int id) { " +
+        "return clientService.getClient(id);
     }
-    @PathVariable int id){
-        return getClient(id);
-    }
-
     @DeleteMapping("/clients/{id}")
-public boolean deleteClient(@RequestHeader Map<String, String> headers,
-                            @PathVariable int id) {
-        return ClientService.impl.ClientService.deleteClient(id);
-}
+    public boolean deleteClient(@RequestHeader Map<String, String> headers, @PathVariable int id) {
+    return ClientService.impl.ClientService.deleteClient(id);
+    }
+        @GetMapping
+        public String saludar(){
+            return "Hola Mundo";
+        }
 }
