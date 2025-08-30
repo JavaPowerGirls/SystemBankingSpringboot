@@ -1,5 +1,9 @@
 package com.account_ms.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -15,7 +19,9 @@ import javax.persistence.Table;
 // Una cuenta bancaria pertenece a un cliente y puede ser de tipo AHORROS o CORRIENTE
 @Entity
 @Table(name = "bank_accounts")
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class BankAccount {
 
     @Id
@@ -36,7 +42,7 @@ public class BankAccount {
     private Long clientId; // referencia al cliente
 
     // Constructor por defecto para JPA/Hibernate
-    public BankAccount() {}
+
 
     public BankAccount(Long clientId, AccountType accountType) {
         this.clientId = clientId;
@@ -86,26 +92,7 @@ public class BankAccount {
         }
     }
 
-    public Long getAccountId() {
-        return accountId;
-    }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public Double getBalance() {
-        return balance;
-    }
-
-    // Devuelve el tipo de cuenta (SAVINGS o CHECKING)
-    public AccountType getAccountType() {
-        return accountType;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
 
     @Override
     public String toString() {

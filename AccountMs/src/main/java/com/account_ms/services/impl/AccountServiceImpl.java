@@ -1,4 +1,7 @@
 package com.account_ms.services.impl;
+
+import com.account_ms.dto.AccountRequest;
+>>>>>>> 0900615 (Actualización de AccountMs: controladores, DTOs y servicios modificados)
 import com.account_ms.model.AccountType;
 import com.account_ms.model.BankAccount;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,14 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(Long id) {
         accountRepository.deleteById(id);
     }
+
+    @Override
+    public BankAccount updateAccount(Long id, AccountRequest request) {
+        BankAccount account = getAccountById(id);
+        account.setAccountType(request.getAccountType());
+        return accountRepository.save(account);
+    }
+
 
 }
 
