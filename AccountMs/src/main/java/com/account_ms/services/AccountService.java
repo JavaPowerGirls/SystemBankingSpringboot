@@ -1,4 +1,5 @@
 package com.account_ms.services;
+import com.account_ms.dto.AccountRequest;
 
 
 import com.account_ms.model.AccountType;
@@ -14,6 +15,9 @@ public interface AccountService {
     BankAccount deposit(Long id, double amount);
     BankAccount withdraw(Long id, double amount);
     void deleteAccount(Long id);
+
+    BankAccount updateAccount(Long id, AccountRequest request);
+
 
     
 }
