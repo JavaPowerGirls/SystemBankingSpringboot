@@ -9,43 +9,54 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@RequestMapping("/clients")
+@RequestMapping("/Clients")
 @RestController
 public class ClientController {
 
+    // Variable y estanciando un servicio
     private final ClientService clientService;
 
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
-    // falta manejo de excepciones, validar datos de entrada, implmentar dtos
+
+    @GetMapping("/hola")
+    public String holamundo() {
+        return "hola";
+    }
 
     @PostMapping
     public Client createClient(@RequestHeader Map<String, String> headers, @RequestBody Client client) {
-
-       return this.clientService.create(client);
+        return this.clientService.create(client);
     }
 
-    //listar a todos los clientes
+
+    // falta manejo de excepciones, validar datos de entrada, implementar datos
+
+
+    //Endpoint para listar clientes
     @GetMapping
-    public List<Client> viewClients() {
-        return clientService.listClients();
+    public List<Client> getAllClients() {
+        return this.clientService.listClients();
     }
 
-    @PutMapping
-    public Client updateClient(@RequestHeader Map<String, String> headers, @RequestBody Client client) {
-        return clientService.update(client);
+    // Actualización de un registro de cliente
+    @PutMapping("/{id}")
+    public Client updateClient(@RequestHeader Map<String, String> headers, @PathVariable int id, @RequestBody Client client) {
+        client.setClientId((long) id);
+        return this.clientService.update(client);
     }
+    // }
 
-    //obtener un cliente by id
+    //obtener un  registro de un Cliente by id
     @GetMapping("/{id}")
-    public Client viewClient (@RequestHeader Map<String, String> headers, @PathVariable int id) {
-        return clientService.getClient(id);
+    public Client viewClient(@RequestHeader Map<String, String> headers, @PathVariable int id) {
+        return this.clientService.getClient(id);
     }
+// Eliminar un registro
     @DeleteMapping("/{id}")
     public boolean deleteClient(@RequestHeader Map<String, String> headers, @PathVariable int id) {
         return clientService.deleteClient(id);
     }
-
 }

@@ -7,6 +7,7 @@ import com.customer_ms.service.ClientService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 // Implementa la lógica de negocio para gestionar clientes del banco
 @Service 
@@ -21,43 +22,53 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client create(Client client) {
-
-        // verificar si ya existe
-        if(clientRepository.existsByDocumentId(client.getDocumentId())){
+        if (clientRepository.existsByDocumentId(client.getDocumentId())) {
             throw new IllegalArgumentException("Client already exists");
         }
 
-        // crear una variable de tipo cliente y se contruye el objeto atributo por atributo
-        Client clientOpt = Client.builder().firstName(client.getFirstName()).
-                lastName(client.getLastName()).documentId(client.getDocumentId()).
-                email(client.getEmail()).build();
+        Client clientOpt = Client.builder()
+                .firstName(client.getFirstName())
+                .lastName(client.getLastName())
+                .documentId(client.getDocumentId())
+                .email(client.getEmail())
+                .build();
 
-      // se guarda en el repositorio el el objeto cliente
-       return clientRepository.save(clientOpt);
+        return clientRepository.save(clientOpt);
     }
 
     @Override
     public List<Client> listClients() {
-        return null; // por mientras
+        return clientRepository.findAll();
     }
 
     @Override
     public Client getClient(int id) {
-        return null; // por mientras
-       /* return data.stream()
-                .filter( dato -> dato.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No existe")); */
+        //return null;
+        return clientRepository.findById((long) id).orElse(null); // Se utiliza Optional.orElse(null) para devolver el cliente
     }
 
     @Override
     public boolean deleteClient(int id) {
-        return false; // por mientras
-        /*return data.removeIf(cust -> cust.getId()==id);*/
+        if (clientRepository.existsById((long) id)) {
+            clientRepository.deleteById((long) id);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public Client update(Client client) {
+        Optional<Client> optional = clientRepository.findById(client.getClientId());
+        if (optional.isPresent()) {
+            Client existing = optional.get();
+            existing.setClientId(client.getClientId());
+            existing.setFirstName(client.getFirstName());
+            existing.setLastName(client.getLastName());
+            existing.setDocumentId(client.getDocumentId());
+            existing.setEmail(client.getEmail());
+            return clientRepository.save(existing);
+        }
         return null;
     }
+
 }

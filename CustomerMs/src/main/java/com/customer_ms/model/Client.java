@@ -32,7 +32,7 @@ public class Client {
     private String lastName;
 
     @Column(unique = true, nullable = false)
-    private String documentId; // e.g. DNI, pasaporte, etc.
+    private String documentId; // e.g. DNI, pasaporte, etc. - OBS.DNI
 
     @Column(nullable = false)
     private String email;
