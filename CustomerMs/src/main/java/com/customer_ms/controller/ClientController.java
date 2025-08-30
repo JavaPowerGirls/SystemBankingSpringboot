@@ -1,42 +1,51 @@
 package com.customer_ms.controller;
 
+import com.customer_ms.dto.ClientRequest;
 import com.customer_ms.model.Client;
-import com.customer_ms.services.ClientService;
+import com.customer_ms.service.ClientService;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-// API REST para gestionar los clientes del banco
+@RequestMapping("/clients")
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/Clients")
 public class ClientController {
 
     private final ClientService clientService;
 
-    @GetMapping("/clients")
-    public List<Client> viewClients(@RequestHeader Map<String, String> headers) {
-        return listClients();
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
     }
 
-    @GetMapping("/clients"/{id}")" +
-        "public Client viewClient (@RequestHeader Map<String, String> headers, @PathVariable int id) { " +
-        "return clientService.getClient(id);
+    // falta manejo de excepciones, validar datos de entrada, implmentar dtos
+
+    @PostMapping
+    public Client createClient(@RequestHeader Map<String, String> headers, @RequestBody Client client) {
+
+       return this.clientService.create(client);
     }
-    @DeleteMapping("/clients/{id}")
+
+    //listar a todos los clientes
+    @GetMapping
+    public List<Client> viewClients() {
+        return clientService.listClients();
+    }
+
+    @PutMapping
+    public Client updateClient(@RequestHeader Map<String, String> headers, @RequestBody Client client) {
+        return clientService.update(client);
+    }
+
+    //obtener un cliente by id
+    @GetMapping("/{id}")
+    public Client viewClient (@RequestHeader Map<String, String> headers, @PathVariable int id) {
+        return clientService.getClient(id);
+    }
+    @DeleteMapping("/{id}")
     public boolean deleteClient(@RequestHeader Map<String, String> headers, @PathVariable int id) {
-    return ClientService.impl.ClientService.deleteClient(id);
+        return clientService.deleteClient(id);
     }
-        @GetMapping
-        public String saludar(){
-            return "Hola Mundo";
-        }
+
 }
