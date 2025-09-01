@@ -1,13 +1,14 @@
 package com.customer_ms.service.impl;
 
+import com.customer_ms.client.AccountServiceClient;
+import com.customer_ms.dto.ClientMapper;
+import com.customer_ms.dto.ClientRequest;
 import com.customer_ms.model.Client;
 import com.customer_ms.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 import com.customer_ms.service.ClientService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 // Implementa la lógica de negocio para gestionar clientes del banco
 @Service 
@@ -15,25 +16,25 @@ public class ClientServiceImpl implements ClientService {
 
 
     private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
+    private final AccountServiceClient accountServiceClient;
 
-    public ClientServiceImpl(ClientRepository clientRepository) {
+    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, AccountServiceClient accountServiceClient) {
         this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
+        this.accountServiceClient = accountServiceClient;
     }
 
     @Override
-    public Client create(Client client) {
-        if (clientRepository.existsByDocumentId(client.getDocumentId())) {
-            throw new IllegalArgumentException("Client already exists");
+    public Client create(ClientRequest request) {
+        if (clientRepository.existsByDni(request.getDni())) {
+            throw new IllegalArgumentException("Dni already exists");
         }
-
-        Client clientOpt = Client.builder()
-                .firstName(client.getFirstName())
-                .lastName(client.getLastName())
-                .documentId(client.getDocumentId())
-                .email(client.getEmail())
-                .build();
-
-        return clientRepository.save(clientOpt);
+        if (clientRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        Client client = clientMapper.toEntity(request);
+        return clientRepository.save(client);
     }
 
     @Override
@@ -42,33 +43,38 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client getClient(int id) {
-        //return null;
-        return clientRepository.findById((long) id).orElse(null); // Se utiliza Optional.orElse(null) para devolver el cliente
+    public Client getClient(Long id) {
+        return clientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Client not found"));
     }
 
     @Override
-    public boolean deleteClient(int id) {
-        if (clientRepository.existsById((long) id)) {
-            clientRepository.deleteById((long) id);
-            return true;
+    public void deleteClient(Long id) {
+        // Verificar si el cliente existe
+        if(!clientRepository.existsById(id))
+            throw new IllegalArgumentException("Client with ID '" + id + "' does not exist.");
+            
+        // REGLA DE NEGOCIO: No se permite eliminar un cliente si tiene cuentas activas
+        if (accountServiceClient.hasActiveBankAccounts(id)) {
+            throw new IllegalArgumentException("Cannot delete client with active bank accounts");
         }
-        return false;
+        
+        clientRepository.deleteById(id);
     }
 
     @Override
-    public Client update(Client client) {
-        Optional<Client> optional = clientRepository.findById(client.getClientId());
-        if (optional.isPresent()) {
-            Client existing = optional.get();
-            existing.setClientId(client.getClientId());
-            existing.setFirstName(client.getFirstName());
-            existing.setLastName(client.getLastName());
-            existing.setDocumentId(client.getDocumentId());
-            existing.setEmail(client.getEmail());
-            return clientRepository.save(existing);
+    public Client update(Long id, ClientRequest request) {
+
+        var client = clientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Client not found"));
+
+        if (clientRepository.existsByDniAndIdNot(request.getDni(), id)) {
+            throw new IllegalArgumentException("DNI already used by another customer");
         }
-        return null;
+        if (clientRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+            throw new IllegalArgumentException("Email already used by another customer");
+        }
+
+       clientMapper.updateEntityFromDto(request,client);
+        return clientRepository.save(client);
     }
 
 }
