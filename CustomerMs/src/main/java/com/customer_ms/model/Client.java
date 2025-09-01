@@ -23,7 +23,7 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long clientId;
+    private Long id;
 
     @Column(nullable = false)
     private String firstName;
@@ -32,8 +32,8 @@ public class Client {
     private String lastName;
 
     @Column(unique = true, nullable = false)
-    private String documentId; // e.g. DNI, pasaporte, etc. - OBS.DNI
+    private String dni; // e.g. DNI, pasaporte, etc. - OBS.DNI
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 }

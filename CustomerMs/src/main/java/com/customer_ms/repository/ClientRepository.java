@@ -4,8 +4,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.customer_ms.model.Client;
 
+import javax.validation.constraints.NotBlank;
+
 // Maneja el acceso a datos de clientes
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    boolean existsByDocumentId(String dni);
+    boolean existsByDni(String dni);
+    boolean existsByEmail(String email);
+    boolean existsByDniAndIdNot(String dni, Long id);
+    boolean existsByEmailAndIdNot(String email, Long id);
 }
