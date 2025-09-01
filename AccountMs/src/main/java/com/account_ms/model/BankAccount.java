@@ -1,8 +1,6 @@
 package com.account_ms.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -32,7 +30,7 @@ public class BankAccount {
     private String accountNumber;
 
     @Column(nullable = false)
-    private Double balance;
+    private Double balance = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -81,27 +79,14 @@ public class BankAccount {
         // Restricción para cuentas de ahorro: el saldo nunca puede ser negativo
         if (accountType == AccountType.SAVINGS) {
             if (newBalance < 0) {
-                throw new IllegalStateException("Savings accounts cannot have a negative balance.");
+                throw new IllegalArgumentException("Savings accounts cannot have a negative balance.");
             }
         } else if (accountType == AccountType.CHECKING) {
             // Restricción para cuentas corrientes: pueden tener sobregiro hasta un límite
             double overdraftLimit = this.accountType.getOverdraftLimit();
             if (newBalance < overdraftLimit) {
-                throw new IllegalStateException("Checking accounts cannot exceed overdraft limit of " + overdraftLimit);
+                throw new IllegalArgumentException("Checking accounts cannot exceed overdraft limit of " + overdraftLimit);
             }
         }
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "BankAccount{" +
-                "accountId=" + accountId +
-                ", accountNumber='" + accountNumber + '\'' +
-                ", balance=" + balance +
-                ", accountType=" + accountType +
-                ", clientId=" + clientId +
-                '}';
     }
 }
