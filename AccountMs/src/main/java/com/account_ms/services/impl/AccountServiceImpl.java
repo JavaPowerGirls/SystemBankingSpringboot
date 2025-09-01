@@ -1,7 +1,7 @@
 package com.account_ms.services.impl;
 
+import com.account_ms.client.CustomerServiceClient;
 import com.account_ms.dto.AccountRequest;
->>>>>>> 0900615 (Actualización de AccountMs: controladores, DTOs y servicios modificados)
 import com.account_ms.model.AccountType;
 import com.account_ms.model.BankAccount;
 import org.springframework.stereotype.Service;
@@ -9,22 +9,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.account_ms.repository.AccountRepository;
 import com.account_ms.services.AccountService;
+
 import java.util.List;
 
-// Gestiona todas las operaciones bancarias relacionadas con cuentas
-// Permite abrir cuentas, hacer depósitos, retiros y consultas de saldo
-@Service 
-@Transactional 
+@Service
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final CustomerServiceClient customerServiceClient;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, CustomerServiceClient customerServiceClient) {
         this.accountRepository = accountRepository;
+        this.customerServiceClient = customerServiceClient;
     }
 
     @Override
     public BankAccount createAccount(Long clientId, AccountType type) {
+        
+        // Validar que el cliente existe antes de crear la cuenta
+        if (!customerServiceClient.clientExists(clientId)) {
+            throw new IllegalArgumentException("Cannot create account: Client with ID " + clientId + " not found");
+        }
+        
         BankAccount account = new BankAccount(clientId, type);
         return accountRepository.save(account);
     }
@@ -57,16 +64,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(Long id) {
+        getAccountById(id); 
         accountRepository.deleteById(id);
     }
 
     @Override
-    public BankAccount updateAccount(Long id, AccountRequest request) {
-        BankAccount account = getAccountById(id);
-        account.setAccountType(request.getAccountType());
-        return accountRepository.save(account);
+    public List<BankAccount> getAccountsByClientId(Long clientId) {
+        return accountRepository.findByClientId(clientId);
     }
-
-
 }
-

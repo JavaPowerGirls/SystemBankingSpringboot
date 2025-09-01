@@ -15,9 +15,7 @@ public interface AccountService {
     BankAccount deposit(Long id, double amount);
     BankAccount withdraw(Long id, double amount);
     void deleteAccount(Long id);
-
-    BankAccount updateAccount(Long id, AccountRequest request);
-
+    List<BankAccount> getAccountsByClientId(Long clientId);
 
     
 }
