@@ -70,6 +70,26 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- OpenAPI/Swagger Dependencies -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.15</version>
+        </dependency>
+        
+        <!-- OpenAPI Generator for Contract-First -->
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -85,6 +105,37 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            
+            <!-- OpenAPI Generator Plugin para Contract-First -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>6.6.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.account_ms.api</apiPackage>
+                            <modelPackage>com.account_ms.model.generated</modelPackage>
+                            <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
+                            <configOptions>
+                                <delegatePattern>true</delegatePattern>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <serializationLibrary>jackson</serializationLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
