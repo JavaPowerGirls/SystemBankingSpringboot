@@ -10,8 +10,6 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class AccountRequest {
     
     @NotNull(message = "Client ID is required")

@@ -88,7 +88,7 @@ paths:
         '404':
           description: Cuenta no encontrada
 
-  /api/v1/accounts/{id}/depositar:
+  /api/v1/accounts/{id}/deposit:
     put:
       summary: Realizar depósito
       description: Deposita dinero en una cuenta bancaria
@@ -118,7 +118,7 @@ paths:
         '404':
           description: Cuenta no encontrada
 
-  /api/v1/accounts/{id}/retirar:
+  /api/v1/accounts/{id}/withdrawal:
     put:
       summary: Realizar retiro
       description: Retira dinero de una cuenta bancaria

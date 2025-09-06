@@ -1,25 +1,17 @@
 package com.account_ms.model;
 
 import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import javax.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-// Representa una cuenta bancaria en el sistema
-// Una cuenta bancaria pertenece a un cliente y puede ser de tipo AHORROS o CORRIENTE
 @Entity
 @Table(name = "bank_accounts")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class BankAccount {
 
     @Id
@@ -34,13 +26,10 @@ public class BankAccount {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AccountType accountType;// Referencia al Enum
+    private AccountType accountType;
 
     @Column(name = "client_id", nullable = false)
-    private Long clientId; // referencia al cliente
-
-    // Constructor por defecto para JPA/Hibernate
-
+    private Long clientId;
 
     public BankAccount(Long clientId, AccountType accountType) {
         this.clientId = clientId;
@@ -49,44 +38,28 @@ public class BankAccount {
         this.accountType = accountType;
     }
 
-    // Genera un número de cuenta único
     private String generateAccountNumber() {
         return "ACC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    // Metodo para deposito dinero de la cuenta bancaria
     public void deposit(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Deposit amount must be positive");
-        }
         this.balance += amount;
     }
 
-    // Metodo para retirar dinero de la cuenta bancaria
     public void withdraw(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Withdrawal amount must be positive.");
-        }
-
-        double newBalance = this.balance - amount;
-        checkWithdrawal(newBalance);
-        // todas las validaciones, se actualiza el saldo
-        this.balance = newBalance;
+        validateWithdraw(amount);
+        this.balance -= amount;
     }
 
-    // Metodo para verificar si el retiro es valido
-    private void checkWithdrawal(double newBalance) {
-        // Restricción para cuentas de ahorro: el saldo nunca puede ser negativo
-        if (accountType == AccountType.SAVINGS) {
-            if (newBalance < 0) {
-                throw new IllegalArgumentException("Savings accounts cannot have a negative balance.");
-            }
-        } else if (accountType == AccountType.CHECKING) {
-            // Restricción para cuentas corrientes: pueden tener sobregiro hasta un límite
-            double overdraftLimit = this.accountType.getOverdraftLimit();
-            if (newBalance < overdraftLimit) {
-                throw new IllegalArgumentException("Checking accounts cannot exceed overdraft limit of " + overdraftLimit);
-            }
+    private void validateWithdraw(double amount) {
+        double newBalance = this.balance - amount;
+        if (accountType == AccountType.SAVINGS && newBalance < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Savings accounts cannot have negative balance");
         }
+
+        if (accountType == AccountType.CHECKING && newBalance < -500) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checking accounts cannot exceed overdraft limit of -500");
+        }
+
     }
 }

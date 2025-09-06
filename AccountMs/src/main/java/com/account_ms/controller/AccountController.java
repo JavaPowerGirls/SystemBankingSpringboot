@@ -25,7 +25,7 @@ public class AccountController {
     
     @PostMapping
     public ResponseEntity<BankAccount> createAccount(@Valid @RequestBody AccountRequest request) {
-        BankAccount account = accountService.createAccount(request.getClientId(), request.getAccountType());
+        BankAccount account = accountService.createAccount(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(account);
     }
     
@@ -41,15 +41,15 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping("/{id}/depositar")
-    public ResponseEntity<BankAccount> deposit(@PathVariable Long id, @Valid @RequestBody AmountRequest amountRequest) {
-        BankAccount account = accountService.deposit(id, amountRequest.getAmount());
+    @PutMapping("/{id}/deposit")
+    public ResponseEntity<BankAccount> deposit(@PathVariable Long id, @Valid @RequestBody AmountRequest request) {
+        BankAccount account = accountService.deposit(id, request);
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping("/{id}/retirar")
-    public ResponseEntity<BankAccount> withdraw(@PathVariable Long id, @Valid @RequestBody AmountRequest amountRequest) {
-        BankAccount account = accountService.withdraw(id, amountRequest.getAmount());
+    @PutMapping("/{id}/withdrawal")
+    public ResponseEntity<BankAccount> withdraw(@PathVariable Long id, @Valid @RequestBody AmountRequest request) {
+        BankAccount account = accountService.withdraw(id, request);
         return ResponseEntity.ok(account);
     }
     
