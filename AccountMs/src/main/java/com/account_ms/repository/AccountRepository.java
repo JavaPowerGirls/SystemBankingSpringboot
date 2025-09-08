@@ -13,4 +13,7 @@ public interface AccountRepository extends JpaRepository<BankAccount, Long> {
     
     // Busca todas las cuentas de un cliente específico
     List<BankAccount> findByClientId(Long clientId);
+    
+    // Busca una cuenta por su número de cuenta
+    java.util.Optional<BankAccount> findByAccountNumber(String accountNumber);
 }

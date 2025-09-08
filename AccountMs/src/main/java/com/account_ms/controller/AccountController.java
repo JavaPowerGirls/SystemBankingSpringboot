@@ -25,7 +25,7 @@ public class AccountController {
     
     @PostMapping
     public ResponseEntity<BankAccount> createAccount(@Valid @RequestBody AccountRequest request) {
-        BankAccount account = accountService.createAccount(request.getClientId(), request.getAccountType());
+        BankAccount account = accountService.createAccount(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(account);
     }
     
@@ -35,21 +35,21 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
     
-    @GetMapping("/{id}")
-    public ResponseEntity<BankAccount> getAccountById(@PathVariable Long id) {
-        BankAccount account = accountService.getAccountById(id);
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<BankAccount> getAccountByAccountNumber(@PathVariable String accountNumber) {
+        BankAccount account = accountService.getAccountByAccountNumber(accountNumber);
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping("/{id}/depositar")
-    public ResponseEntity<BankAccount> deposit(@PathVariable Long id, @Valid @RequestBody AmountRequest amountRequest) {
-        BankAccount account = accountService.deposit(id, amountRequest.getAmount());
+    @PutMapping("/{accountNumber}/deposit")
+    public ResponseEntity<BankAccount> deposit(@PathVariable String accountNumber, @Valid @RequestBody AmountRequest request) {
+        BankAccount account = accountService.deposit(accountNumber, request);
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping("/{id}/retirar")
-    public ResponseEntity<BankAccount> withdraw(@PathVariable Long id, @Valid @RequestBody AmountRequest amountRequest) {
-        BankAccount account = accountService.withdraw(id, amountRequest.getAmount());
+    @PutMapping("/{accountNumber}/withdrawal")
+    public ResponseEntity<BankAccount> withdraw(@PathVariable String accountNumber, @Valid @RequestBody AmountRequest request) {
+        BankAccount account = accountService.withdraw(accountNumber, request);
         return ResponseEntity.ok(account);
     }
     

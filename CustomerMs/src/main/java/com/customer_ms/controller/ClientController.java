@@ -28,8 +28,6 @@ public class ClientController {
         var savedClient = clientService.create(request);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
-    // falta manejo de excepciones, validar datos de entrada, implementar datos
-
 
     //Endpoint para listar clientes
     @GetMapping
