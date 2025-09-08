@@ -1,0 +1,252 @@
+openapi: 3.0.3
+info:
+  title: Banking Transactions API
+  description: API para gestionar transacciones bancarias (depósitos, retiros y transferencias)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo (Transaction Microservice)
+
+paths:
+  /api/v1/transactions/accounts/{accountNumber}/deposit:
+    post:
+      tags:
+        - Transactions
+      summary: Realizar depósito
+      description: Realiza un depósito en la cuenta especificada
+      operationId: deposit
+      parameters:
+        - name: accountNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Número de la cuenta bancaria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmountRequest'
+      responses:
+        '200':
+          description: Depósito realizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Error en la operación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/transactions/accounts/{accountNumber}/withdrawal:
+    post:
+      tags:
+        - Transactions
+      summary: Realizar retiro
+      description: Realiza un retiro de la cuenta especificada
+      operationId: withdrawal
+      parameters:
+        - name: accountNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Número de la cuenta bancaria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmountRequest'
+      responses:
+        '200':
+          description: Retiro realizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Error en la operación (fondos insuficientes, cuenta no encontrada, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/transactions/accounts/transfer:
+    post:
+      tags:
+        - Transactions
+      summary: Realizar transferencia
+      description: Realiza una transferencia entre dos cuentas
+      operationId: transfer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: Transferencia realizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Error en la transferencia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/transactions/accounts/{accountNumber}/history:
+    get:
+      tags:
+        - Transactions
+      summary: Obtener historial de transacciones
+      description: Obtiene el historial de transacciones de una cuenta específica
+      operationId: getTransactionHistory
+      parameters:
+        - name: accountNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Número de la cuenta bancaria
+      responses:
+        '200':
+          description: Historial de transacciones obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+
+  /api/v1/transactions:
+    get:
+      tags:
+        - Transactions
+      summary: Obtener todas las transacciones
+      description: Obtiene todas las transacciones del sistema
+      operationId: getAllTransactions
+      responses:
+        '200':
+          description: Lista completa de transacciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+
+components:
+  schemas:
+    AmountRequest:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Monto de la operación
+          example: 100.50
+      description: Request para operaciones con monto (depósito/retiro)
+
+    TransferRequest:
+      type: object
+      required:
+        - sourceAccountNumber
+        - destinationAccountNumber
+        - amount
+      properties:
+        sourceAccountNumber:
+          type: string
+          description: Número de la cuenta origen
+          example: "ACC-12345678"
+        destinationAccountNumber:
+          type: string
+          description: Número de la cuenta destino
+          example: "ACC-87654321"
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Monto a transferir
+          example: 250.75
+      description: Request para transferencias entre cuentas
+
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único de la transacción
+          example: "648b7f123456789abcdef012"
+        type:
+          $ref: '#/components/schemas/TransactionType'
+        amount:
+          type: number
+          format: double
+          description: Monto de la transacción
+          example: 100.50
+        date:
+          type: string
+          format: date
+          description: Fecha de la transacción
+          example: "2025-09-06"
+        sourceAccountNumber:
+          type: string
+          description: Número de la cuenta origen
+          example: "ACC-12345678"
+        destinationAccountNumber:
+          type: string
+          description: Número de la cuenta destino (solo para transferencias)
+          example: "ACC-87654321"
+          nullable: true
+      description: Respuesta con información de la transacción
+
+    TransactionType:
+      type: string
+      enum:
+        - DEPOSIT
+        - WITHDRAWAL
+        - TRANSFER
+      description: Tipo de transacción
+      example: DEPOSIT
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Momento del error
+        status:
+          type: integer
+          description: Código de estado HTTP
+          example: 400
+        error:
+          type: string
+          description: Tipo de error
+          example: "Bad Request"
+        message:
+          type: string
+          description: Mensaje descriptivo del error
+          example: "Operation failed: Account not found"
+        path:
+          type: string
+          description: Endpoint donde ocurrió el error
+          example: "/transactions/accounts/ACC-12345678/deposit"
+      description: Respuesta de error estándar
+
+tags:
+  - name: Transactions
+    description: Operaciones relacionadas con transacciones bancarias
