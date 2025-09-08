@@ -55,29 +55,30 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public BankAccount getAccountById(Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+    public BankAccount getAccountByAccountNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found with account number: " + accountNumber));
     }
 
     @Override
-    public BankAccount deposit(Long id, AmountRequest request) {
-        BankAccount account = getAccountById(id);
+    public BankAccount deposit(String accountNumber, AmountRequest request) {
+        BankAccount account = getAccountByAccountNumber(accountNumber);
         account.deposit(request.getAmount());
         return accountRepository.save(account);
 
     }
 
     @Override
-    public BankAccount withdraw(Long id, AmountRequest request) {
-        BankAccount account = getAccountById(id);
+    public BankAccount withdraw(String accountNumber, AmountRequest request) {
+        BankAccount account = getAccountByAccountNumber(accountNumber);
         account.withdraw(request.getAmount());
         return accountRepository.save(account);
     }
 
     @Override
     public void deleteAccount(Long id) {
-        getAccountById(id); 
+        accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found")); 
         accountRepository.deleteById(id);
     }
 

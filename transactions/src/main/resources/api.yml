@@ -12,7 +12,7 @@ servers:
     description: Servidor de desarrollo
 
 paths:
-  /transactions/accounts/{accountId}/deposit:
+  /transactions/accounts/{accountNumber}/deposit:
     post:
       tags:
         - Transactions
@@ -20,12 +20,12 @@ paths:
       description: Realiza un depósito en la cuenta especificada
       operationId: deposit
       parameters:
-        - name: accountId
+        - name: accountNumber
           in: path
           required: true
           schema:
             type: string
-          description: ID de la cuenta bancaria
+          description: Número de la cuenta bancaria
       requestBody:
         required: true
         content:
@@ -46,7 +46,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/accounts/{accountId}/withdrawal:
+  /transactions/accounts/{accountNumber}/withdrawal:
     post:
       tags:
         - Transactions
@@ -54,12 +54,12 @@ paths:
       description: Realiza un retiro de la cuenta especificada
       operationId: withdrawal
       parameters:
-        - name: accountId
+        - name: accountNumber
           in: path
           required: true
           schema:
             type: string
-          description: ID de la cuenta bancaria
+          description: Número de la cuenta bancaria
       requestBody:
         required: true
         content:
@@ -107,7 +107,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/accounts/{accountId}:
+  /transactions/accounts/{accountNumber}/history:
     get:
       tags:
         - Transactions
@@ -115,12 +115,12 @@ paths:
       description: Obtiene el historial de transacciones de una cuenta específica
       operationId: getTransactionHistory
       parameters:
-        - name: accountId
+        - name: accountNumber
           in: path
           required: true
           schema:
             type: string
-          description: ID de la cuenta bancaria
+          description: Número de la cuenta bancaria
       responses:
         '200':
           description: Historial de transacciones obtenido exitosamente
@@ -166,18 +166,18 @@ components:
     TransferRequest:
       type: object
       required:
-        - sourceAccountId
-        - destinationAccountId
+        - sourceAccountNumber
+        - destinationAccountNumber
         - amount
       properties:
-        sourceAccountId:
+        sourceAccountNumber:
           type: string
-          description: ID de la cuenta origen
-          example: "12345"
-        destinationAccountId:
+          description: Número de la cuenta origen
+          example: "ACC-12345678"
+        destinationAccountNumber:
           type: string
-          description: ID de la cuenta destino
-          example: "67890"
+          description: Número de la cuenta destino
+          example: "ACC-87654321"
         amount:
           type: number
           format: double
@@ -205,14 +205,14 @@ components:
           format: date
           description: Fecha de la transacción
           example: "2025-09-06"
-        sourceAccountId:
+        sourceAccountNumber:
           type: string
-          description: ID de la cuenta origen
-          example: "12345"
-        destinationAccountId:
+          description: Número de la cuenta origen
+          example: "ACC-12345678"
+        destinationAccountNumber:
           type: string
-          description: ID de la cuenta destino (solo para transferencias)
-          example: "67890"
+          description: Número de la cuenta destino (solo para transferencias)
+          example: "ACC-87654321"
           nullable: true
       description: Respuesta con información de la transacción
 
@@ -247,7 +247,7 @@ components:
         path:
           type: string
           description: Endpoint donde ocurrió el error
-          example: "/transactions/accounts/12345/deposit"
+          example: "/transactions/accounts/ACC-12345678/deposit"
       description: Respuesta de error estándar
 
 tags:

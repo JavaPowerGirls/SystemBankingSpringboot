@@ -95,6 +95,8 @@
             <version>2.1.0</version>
         </dependency>
 
+        
+
     </dependencies>
 
     <build>
@@ -150,6 +152,39 @@
                                 <openApiNullable>false</openApiNullable>
                             </configOptions>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+             <!-- Checklist -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <configLocation>src/main/resources/checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+
+            <!--Jacoco -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <!-- Genera cobertura en test -->
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- Reporte al finalizar los tests -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

@@ -31,12 +31,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Mono<TransactionResponse> deposit(String accountId, AmountRequest request) {
-        return callAccount("/api/v1/accounts/{id}/deposit", accountId, request)
+    public Mono<TransactionResponse> deposit(String accountNumber, AmountRequest request) {
+        return callAccount("/api/v1/accounts/{accountNumber}/deposit", accountNumber, request)
                 .flatMap(result -> {
                     Transaction transaction = Transaction.builder()
                             .type(TransactionType.DEPOSIT)
-                            .sourceAccountId(accountId)
+                            .sourceAccountNumber(accountNumber)
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
@@ -46,12 +46,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Mono<TransactionResponse> withdrawal(String accountId, AmountRequest request) {
-        return callAccount("/api/v1/accounts/{id}/withdrawal", accountId, request)
+    public Mono<TransactionResponse> withdrawal(String accountNumber, AmountRequest request) {
+        return callAccount("/api/v1/accounts/{accountNumber}/withdrawal", accountNumber, request)
                 .flatMap(result -> {
                     Transaction transaction = Transaction.builder()
                             .type(TransactionType.WITHDRAWAL)
-                            .sourceAccountId(accountId)
+                            .sourceAccountNumber(accountNumber)
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
@@ -66,14 +66,14 @@ public class TransactionServiceImpl implements TransactionService {
         amountRequest.setAmount(request.getAmount());
 
         // Realizar transferencia: retiro de origen y depósito en destino
-        return callAccount("/api/v1/accounts/{id}/withdrawal", request.getSourceAccountId(), amountRequest)
+        return callAccount("/api/v1/accounts/{accountNumber}/withdrawal", request.getSourceAccountNumber(), amountRequest)
                 .flatMap(withdrawalResult -> 
-                    callAccount("/api/v1/accounts/{id}/deposit", request.getDestinationAccountId(), amountRequest))
+                    callAccount("/api/v1/accounts/{accountNumber}/deposit", request.getDestinationAccountNumber(), amountRequest))
                 .flatMap(depositResult -> {
                     Transaction transaction = Transaction.builder()
                             .type(TransactionType.TRANSFER)
-                            .sourceAccountId(request.getSourceAccountId())
-                            .destinationAccountId(request.getDestinationAccountId())
+                            .sourceAccountNumber(request.getSourceAccountNumber())
+                            .destinationAccountNumber(request.getDestinationAccountNumber())
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
@@ -83,9 +83,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Flux<TransactionResponse> history(String accountId) {
-        return validateAccountExists(accountId)
-                .thenMany(transactionRepository.findBySourceAccountIdOrDestinationAccountIdOrderByDateDesc(accountId, accountId)
+    public Flux<TransactionResponse> history(String accountNumber) {
+        return validateAccountExists(accountNumber)
+                .thenMany(transactionRepository.findBySourceAccountNumberOrDestinationAccountNumberOrderByDateDesc(accountNumber, accountNumber)
                         .map(TransactionMapper::toTransactionResponse));
     }
 
@@ -97,9 +97,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     // Métodos helper privados para reducir duplicación
 
-    private Mono<Object> callAccount(String uriTemplate, String accountId, AmountRequest request) {
+    private Mono<Object> callAccount(String uriTemplate, String accountNumber, AmountRequest request) {
         return webClient.put()
-                .uri(uriTemplate, accountId)
+                .uri(uriTemplate, accountNumber)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(Object.class)
@@ -107,13 +107,13 @@ public class TransactionServiceImpl implements TransactionService {
                     Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Operation failed: " + error.getMessage())));
     }
 
-    private Mono<Void> validateAccountExists(String accountId) {
+    private Mono<Void> validateAccountExists(String accountNumber) {
         return webClient.get()
-                .uri("/api/v1/accounts/{id}", accountId)
+                .uri("/api/v1/accounts/{accountNumber}", accountNumber)
                 .retrieve()
                 .bodyToMono(Object.class)
                 .then()
                 .onErrorResume(error -> 
-                    Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Account with ID " + accountId + " not found")));
+                    Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Account with number " + accountNumber + " not found")));
     }
 }

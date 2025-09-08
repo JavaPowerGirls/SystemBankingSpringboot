@@ -9,9 +9,9 @@ import reactor.core.publisher.Mono;
 
 public interface TransactionService {
 
-     Mono<TransactionResponse> deposit(String accountId, AmountRequest request);
-     Mono<TransactionResponse> withdrawal(String accountId, AmountRequest request);
+     Mono<TransactionResponse> deposit(String accountNumber, AmountRequest request);
+     Mono<TransactionResponse> withdrawal(String accountNumber, AmountRequest request);
      Mono<TransactionResponse> transfer(TransferRequest request);
-     Flux<TransactionResponse> history(String accountId);
+     Flux<TransactionResponse> history(String accountNumber);
      Flux<TransactionResponse> getAllTransactions();
 }
