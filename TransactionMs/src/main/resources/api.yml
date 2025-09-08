@@ -3,16 +3,13 @@ info:
   title: Banking Transactions API
   description: API para gestionar transacciones bancarias (depósitos, retiros y transferencias)
   version: 1.0.0
-  contact:
-    name: Banking System Team
-    email: support@bankingsystem.com
 
 servers:
   - url: http://localhost:8080
-    description: Servidor de desarrollo
+    description: Servidor de desarrollo (Transaction Microservice)
 
 paths:
-  /transactions/accounts/{accountNumber}/deposit:
+  /api/v1/transactions/accounts/{accountNumber}/deposit:
     post:
       tags:
         - Transactions
@@ -46,7 +43,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/accounts/{accountNumber}/withdrawal:
+  /api/v1/transactions/accounts/{accountNumber}/withdrawal:
     post:
       tags:
         - Transactions
@@ -80,7 +77,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/accounts/transfer:
+  /api/v1/transactions/accounts/transfer:
     post:
       tags:
         - Transactions
@@ -107,7 +104,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/accounts/{accountNumber}/history:
+  /api/v1/transactions/accounts/{accountNumber}/history:
     get:
       tags:
         - Transactions
@@ -131,7 +128,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/TransactionResponse'
 
-  /transactions:
+  /api/v1/transactions:
     get:
       tags:
         - Transactions

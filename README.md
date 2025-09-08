@@ -6,11 +6,11 @@
 
 ## Índice
 
-1. [Entregable II - CustomerMs y AccountMs](#entregable-ii---customerms-y-accountms)
-2. [Entregable III - TransactionMs](#entregable-iii---transactionms)
-3. [Diagramas de Arquitectura](#diagramas-de-arquitectura)
-4. [Documentación OpenAPI](#documentación-openapi)
-5. [Pruebas con Postman](#pruebas-con-postman)
+- [Entregable II - CustomerMs y AccountMs](#entregable-ii---customerms-y-accountms)
+- [Entregable III - TransactionMs](#entregable-iii---transactionms)
+- [Diagramas de Arquitectura](#diagramas-de-arquitectura)
+- [Documentación OpenAPI](#documentación-openapi)
+- [Pruebas con Postman](#pruebas-con-postman)
 
 ---
 
@@ -115,11 +115,18 @@
 
 ### Microservicio
 
-**TransactionMs** (Puerto 8083)
+**TransactionMs** (Puerto 8080)
 - Gestión de transacciones e historial
 - Base de datos: MongoDB
 - Programación reactiva con WebFlux
 - Ubicación: `./TransactionMs`
+
+### Base de Datos MongoDB
+![Base de Datos MongoDB](./uml/mongo_db.png)
+
+## Pruebas con Postman
+
+**Documentación:** [Link de documentación Postman](https://documenter.getpostman.com/view/24255217/2sB3HnJeqg)
 
 ### Endpoints
 
@@ -172,7 +179,7 @@
 ![Eliminar Cliente](./uml/flujo_eliminar_cliente.png)
 
 ### Diagrama de Componentes
-![Arquitectura del Sistema](./uml/componentes.jpg)
+![Arquitectura del Sistema](./uml/componentes.png)
 
 ### Diagrama General
 ![Diagrama UML](./uml/uml.png)
@@ -183,8 +190,7 @@
 
 **Contract-First:** Todas las APIs fueron diseñadas usando el enfoque contract-first, donde se define primero la especificación OpenAPI antes de implementar el código.
 
+![Arquitectura del Sistema](./uml/contract_first.png)
+
 ---
 
-## Pruebas con Postman
-
-**Documentación:** [Link de documentación Postman]
