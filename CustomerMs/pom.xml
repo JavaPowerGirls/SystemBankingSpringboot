@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <version>3.2.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com</groupId>
-    <artifactId>customer-ms</artifactId>
+    <artifactId>customer_ms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>customer-ms</name>
-    <description>Customer Microservice for Banking System</description>
+    <name>account-ms</name>
+    <description>Account Microservice for Banking System</description>
     <url/>
     <licenses>
         <license/>
@@ -52,6 +54,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -63,13 +75,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
-
 
         <!-- Open Api  -->
 
@@ -77,11 +88,6 @@
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
             <version>0.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -117,7 +123,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            
+
             <!-- OpenAPI Generator Plugin para Contract-First -->
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -141,7 +147,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
-
 </project>
