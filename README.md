@@ -8,6 +8,7 @@
 
 - [Entregable II - CustomerMs y AccountMs](#entregable-ii---customerms-y-accountms)
 - [Entregable III - TransactionMs](#entregable-iii---transactionms)
+- [Entregable IV - Testing y Cobertura de Código](#entregable-iv---testing-y-cobertura-de-código)
 - [Diagramas de Arquitectura](#diagramas-de-arquitectura)
 - [Documentación OpenAPI](#documentación-openapi)
 - [Pruebas con Postman](#pruebas-con-postman)
@@ -162,6 +163,30 @@
 <td>Historial por cuenta</td>
 </tr>
 </table>
+
+---
+
+## Entregable IV - Testing y Cobertura de Código
+
+**Tecnologías:** JUnit 5 + Mockito + JaCoCo
+
+### Implementación de Testing
+
+Se implementó una suite completa de pruebas unitarias para todos los microservicios, logrando **100% de cobertura de código** en JaCoCo para controllers y services.
+
+
+#### Reportes de Cobertura JaCoCo
+
+Los reportes muestran **100% de cobertura** en las clases principales de lógica de negocio:
+
+**AccountMs - Cobertura de Código**
+![AccountMs JaCoCo Report](./uml/account_jacoco.png)
+
+**CustomerMs - Cobertura de Código**
+![CustomerMs JaCoCo Report](./uml/customer_jacoco.png)
+
+**TransactionMs - Cobertura de Código**
+![TransactionMs JaCoCo Report](./uml/transaction_jacoco.png)
 
 ---
 
