@@ -1,15 +1,15 @@
 package com.account_ms.services.impl;
 
+import com.account_ms.client.CustomerClient;
 import com.account_ms.dto.AccountRequest;
 import com.account_ms.dto.AmountRequest;
-import com.account_ms.model.AccountType;
 import com.account_ms.model.BankAccount;
+import com.account_ms.rules.WithdrawalRule;
+import com.account_ms.rules.WithdrawalRuleFactory;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestClientException;
 
 import com.account_ms.repository.AccountRepository;
 import com.account_ms.services.AccountService;
@@ -24,27 +24,27 @@ import org.springframework.http.HttpStatus;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final RestTemplate restTemplate;
-    
+    private final CustomerClient customerClient;
+    private final WithdrawalRuleFactory withdrawalRuleFactory;
+
     @Value("${customer.service.url:http://localhost:8081}")
     private String customerServiceUrl;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RestTemplate restTemplate) {
+    public AccountServiceImpl(AccountRepository accountRepository,
+                            CustomerClient customerClient,
+                            WithdrawalRuleFactory withdrawalRuleFactory) {
         this.accountRepository = accountRepository;
-        this.restTemplate = restTemplate;
+        this.customerClient = customerClient;
+        this.withdrawalRuleFactory = withdrawalRuleFactory;
     }
 
     @Override
     public BankAccount createAccount(AccountRequest request) {
         
         // Validar que el cliente existe antes de crear la cuenta
-        try {
-            String url = customerServiceUrl + "/api/v1/clients/" + request.getClientId();
-            restTemplate.getForObject(url, Object.class);
-        } catch (RestClientException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with ID  not found");
+        if(customerClient.existsById(request.getClientId())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client with ID " + request.getClientId() + " does not exist");
         }
-        
         BankAccount account = new BankAccount(request.getClientId(), request.getAccountType());
         return accountRepository.save(account);
     }
@@ -71,6 +71,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public BankAccount withdraw(String accountNumber, AmountRequest request) {
         BankAccount account = getAccountByAccountNumber(accountNumber);
+
+        // Aplicar reglas de retiro específicas según el tipo de cuenta
+        WithdrawalRule rule = withdrawalRuleFactory.getRule(account.getAccountType());
+        rule.validate(account.getBalance(), request.getAmount());
+
         account.withdraw(request.getAmount());
         return accountRepository.save(account);
     }
@@ -84,6 +89,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<BankAccount> getAccountsByClientId(Long clientId) {
+        if(customerClient.existsById(clientId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client does not exist");
+        }
         return accountRepository.findByClientId(clientId);
     }
 }

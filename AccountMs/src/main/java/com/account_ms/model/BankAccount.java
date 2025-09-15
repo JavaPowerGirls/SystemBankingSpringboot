@@ -1,8 +1,6 @@
 package com.account_ms.model;
 
 import lombok.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 import javax.persistence.*;
@@ -47,19 +45,6 @@ public class BankAccount {
     }
 
     public void withdraw(double amount) {
-        validateWithdraw(amount);
         this.balance -= amount;
-    }
-
-    private void validateWithdraw(double amount) {
-        double newBalance = this.balance - amount;
-        if (accountType == AccountType.SAVINGS && newBalance < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Savings accounts cannot have negative balance");
-        }
-
-        if (accountType == AccountType.CHECKING && newBalance < -500) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checking accounts cannot exceed overdraft limit of -500");
-        }
-
     }
 }
