@@ -3,7 +3,6 @@ import com.account_ms.dto.AccountRequest;
 
 
 import com.account_ms.dto.AmountRequest;
-import com.account_ms.model.AccountType;
 import com.account_ms.model.BankAccount;
 
 import java.util.List;

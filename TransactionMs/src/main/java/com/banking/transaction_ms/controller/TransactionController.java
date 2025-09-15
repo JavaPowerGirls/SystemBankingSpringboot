@@ -35,7 +35,8 @@ public class TransactionController {
 
     // Retirar
    @PostMapping("/accounts/{accountNumber}/withdrawal")
-    public Mono<TransactionResponse> withdrawal(@PathVariable String accountNumber, @RequestBody AmountRequest request) {
+    public Mono<TransactionResponse> withdrawal(@PathVariable String accountNumber,
+                                               @RequestBody AmountRequest request) {
         return transactionService.withdrawal(accountNumber, request);
     }
 
@@ -46,7 +47,7 @@ public class TransactionController {
     }
 
     @GetMapping
-    public Flux<TransactionResponse> getAllTransactions(){
+    public Flux<TransactionResponse> getAllTransactions() {
         return transactionService.getAllTransactions();
     }
 

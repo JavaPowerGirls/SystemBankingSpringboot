@@ -12,7 +12,8 @@ public final class TransactionMapper {
                 .amount(transaction.getAmount())
                 .date(transaction.getDate())
                 .sourceAccountNumber(transaction.getSourceAccountNumber())
-                .destinationAccountNumber(transaction.getDestinationAccountNumber()) // Será null para DEPOSIT/WITHDRAWAL
+                .destinationAccountNumber(transaction.getDestinationAccountNumber())
+                // Será null para DEPOSIT/WITHDRAWAL
                 .build();
     }
 

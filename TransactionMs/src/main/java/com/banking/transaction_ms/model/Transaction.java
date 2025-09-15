@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+// Representa una transacción bancaria en el sistema
 @Getter
 @Setter
 @Document(collection = "transactions")

@@ -12,5 +12,4 @@ public interface ClientService {
     void deleteClient(Long id);
     List<Client> listClients();
 
-    Client create(String id, String nombre);
 }

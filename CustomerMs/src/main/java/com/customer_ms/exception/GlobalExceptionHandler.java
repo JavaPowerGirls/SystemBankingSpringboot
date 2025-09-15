@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("status", ex.getStatus().value());
         response.put("message", ex.getReason());
-        
+
         return new ResponseEntity<>(response, ex.getStatus());
     }
 }
