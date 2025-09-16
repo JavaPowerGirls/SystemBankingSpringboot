@@ -1,17 +1,13 @@
 package com.customer_ms.service.impl;
 
+import com.customer_ms.client.AccountClient;
 import com.customer_ms.dto.ClientMapper;
 import com.customer_ms.dto.ClientRequest;
 import com.customer_ms.model.Client;
 import com.customer_ms.repository.ClientRepository;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.customer_ms.service.ClientService;
 
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestClientException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -24,15 +20,14 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
-    private final RestTemplate restTemplate;
-    
-    @Value("${account.service.url:http://localhost:8082}")
-    private String accountServiceUrl;
+    private final AccountClient accountClient;
 
-    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, RestTemplate restTemplate) {
+    public ClientServiceImpl(ClientRepository clientRepository,
+                            ClientMapper clientMapper,
+                            AccountClient accountClient) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
-        this.restTemplate = restTemplate;
+        this.accountClient = accountClient;
     }
 
     @Override
@@ -53,26 +48,22 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client getClient(Long id) {
-          return clientRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+          return clientRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
     }
 
     @Override
     public void deleteClient(Long id) {
-        // Verificar que el cliente existe usando getClient
-        getClient(id);
-            
+        // Verificar que el cliente existe
+        Client client = getClient(id);
+
         // REGLA DE NEGOCIO: No se permite eliminar un cliente si tiene cuentas activas
-        try {
-            List<?> accounts = restTemplate.getForObject(accountServiceUrl + "/api/v1/accounts/clients/" + id, List.class);
-            if (accounts != null && !accounts.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete client with active bank accounts");
-            }
-        } catch (RestClientException e) {
-            // Si hay error de conexión, no permitir eliminar (fail-safe)
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Cannot verify accounts - deletion not allowed");
+        if (!accountClient.canDeleteClient(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Cannot delete client with active bank accounts");
         }
-        
-        clientRepository.deleteById(id);
+
+        clientRepository.delete(client);
     }
 
     @Override
@@ -87,7 +78,7 @@ public class ClientServiceImpl implements ClientService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already used by another customer");
         }
 
-        clientMapper.updateEntityFromDto(request,client);
+        clientMapper.updateEntityFromDto(request, client);
         return clientRepository.save(client);
     }
 

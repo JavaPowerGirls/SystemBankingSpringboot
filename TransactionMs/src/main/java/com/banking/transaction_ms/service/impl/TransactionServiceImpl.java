@@ -2,11 +2,9 @@ package com.banking.transaction_ms.service.impl;
 
 import java.time.LocalDate;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.banking.transaction_ms.client.AccountClient;
 import com.banking.transaction_ms.dto.AmountRequest;
 import com.banking.transaction_ms.dto.TransactionResponse;
 import com.banking.transaction_ms.dto.TransferRequest;
@@ -23,41 +21,42 @@ import reactor.core.publisher.Mono;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final WebClient webClient;
+    private final AccountClient accountClient;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, WebClient webClient){
+    public TransactionServiceImpl(TransactionRepository transactionRepository,
+                                AccountClient accountClient) {
         this.transactionRepository = transactionRepository;
-        this.webClient = webClient;
+        this.accountClient = accountClient;
     }
 
     @Override
     public Mono<TransactionResponse> deposit(String accountNumber, AmountRequest request) {
-        return callAccount("/api/v1/accounts/{accountNumber}/deposit", accountNumber, request)
-                .flatMap(result -> {
-                    Transaction transaction = Transaction.builder()
+        return accountClient.deposit(accountNumber, request)
+                .then(Mono.fromCallable(() -> {
+                    return Transaction.builder()
                             .type(TransactionType.DEPOSIT)
                             .sourceAccountNumber(accountNumber)
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
-                    return transactionRepository.save(transaction)
-                            .map(TransactionMapper::toTransactionResponse);
-                });
+                }))
+                .flatMap(transaction -> transactionRepository.save(transaction)
+                        .map(TransactionMapper::toTransactionResponse));
     }
 
     @Override
     public Mono<TransactionResponse> withdrawal(String accountNumber, AmountRequest request) {
-        return callAccount("/api/v1/accounts/{accountNumber}/withdrawal", accountNumber, request)
-                .flatMap(result -> {
-                    Transaction transaction = Transaction.builder()
+        return accountClient.withdrawal(accountNumber, request)
+                .then(Mono.fromCallable(() -> {
+                    return Transaction.builder()
                             .type(TransactionType.WITHDRAWAL)
                             .sourceAccountNumber(accountNumber)
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
-                    return transactionRepository.save(transaction)
-                            .map(TransactionMapper::toTransactionResponse);
-                });
+                }))
+                .flatMap(transaction -> transactionRepository.save(transaction)
+                        .map(TransactionMapper::toTransactionResponse));
     }
 
     @Override
@@ -65,28 +64,30 @@ public class TransactionServiceImpl implements TransactionService {
         AmountRequest amountRequest = new AmountRequest();
         amountRequest.setAmount(request.getAmount());
 
-        // Realizar transferencia: retiro de origen y depósito en destino
-        return callAccount("/api/v1/accounts/{accountNumber}/withdrawal", request.getSourceAccountNumber(), amountRequest)
-                .flatMap(withdrawalResult -> 
-                    callAccount("/api/v1/accounts/{accountNumber}/deposit", request.getDestinationAccountNumber(), amountRequest))
-                .flatMap(depositResult -> {
-                    Transaction transaction = Transaction.builder()
+        return accountClient.validateAccountExists(request.getSourceAccountNumber())
+                .then(Mono.defer(() -> accountClient.validateAccountExists(request.getDestinationAccountNumber())))
+                .then(Mono.defer(() -> accountClient.withdrawal(request.getSourceAccountNumber(), amountRequest)))
+                .then(Mono.defer(() -> accountClient.deposit(request.getDestinationAccountNumber(), amountRequest)))
+                .then(Mono.fromCallable(() -> {
+                    return Transaction.builder()
                             .type(TransactionType.TRANSFER)
                             .sourceAccountNumber(request.getSourceAccountNumber())
                             .destinationAccountNumber(request.getDestinationAccountNumber())
                             .amount(request.getAmount())
                             .date(LocalDate.now())
                             .build();
-                    return transactionRepository.save(transaction)
-                            .map(TransactionMapper::toTransactionResponse);
-                });
+                }))
+                .flatMap(transaction -> transactionRepository.save(transaction)
+                        .map(TransactionMapper::toTransactionResponse));
     }
 
     @Override
     public Flux<TransactionResponse> history(String accountNumber) {
-        return validateAccountExists(accountNumber)
-                .thenMany(transactionRepository.findBySourceAccountNumberOrDestinationAccountNumberOrderByDateDesc(accountNumber, accountNumber)
-                        .map(TransactionMapper::toTransactionResponse));
+        return accountClient.validateAccountExists(accountNumber)
+                .thenMany(Flux.defer(() -> transactionRepository
+                        .findBySourceAccountNumberOrDestinationAccountNumberOrderByDateDesc(
+                                accountNumber, accountNumber)
+                        .map(TransactionMapper::toTransactionResponse)));
     }
 
     @Override
@@ -95,25 +96,4 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(TransactionMapper::toTransactionResponse);
     }
 
-    // Métodos helper privados para reducir duplicación
-
-    private Mono<Object> callAccount(String uriTemplate, String accountNumber, AmountRequest request) {
-        return webClient.put()
-                .uri(uriTemplate, accountNumber)
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(Object.class)
-                .onErrorResume(error -> 
-                    Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Operation failed: " + error.getMessage())));
-    }
-
-    private Mono<Void> validateAccountExists(String accountNumber) {
-        return webClient.get()
-                .uri("/api/v1/accounts/{accountNumber}", accountNumber)
-                .retrieve()
-                .bodyToMono(Object.class)
-                .then()
-                .onErrorResume(error -> 
-                    Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Account with number " + accountNumber + " not found")));
-    }
 }

@@ -1,6 +1,5 @@
 package com.customer_ms.controller;
 
-import com.customer_ms.dto.ClientMapper;
 import com.customer_ms.dto.ClientRequest;
 import com.customer_ms.model.Client;
 import com.customer_ms.service.ClientService;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RequestMapping("api/v1/clients")
 @RestController
@@ -52,6 +50,6 @@ public class ClientController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
-        return ResponseEntity.ok("Client with given id successfully deleted");
+        return ResponseEntity.noContent().build();
     }
 }

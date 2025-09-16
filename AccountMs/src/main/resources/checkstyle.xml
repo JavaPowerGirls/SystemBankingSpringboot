@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+
+    <!-- Reglas a nivel de archivo (fuera de TreeWalker) -->
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- Nombres básicos -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z_][a-z0-9_]*)*$"/>
+        </module>
+
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Imports básicos -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="javax.persistence.*,lombok.*,org.springframework.web.bind.annotation.*"/>
+        </module>
+        <module name="UnusedImports"/>
+
+        <!-- Tamaño básico -->
+        <module name="MethodLength">
+            <property name="max" value="80"/>
+        </module>
+
+        <!-- Espacios básicos -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI"/>
+        </module>
+
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, EQUAL, NOT_EQUAL"/>
+        </module>
+
+        <!-- Llaves básicas -->
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+
+        <!-- Buenas prácticas básicas -->
+        <module name="EmptyBlock"/>
+        <module name="EqualsHashCode"/>
+
+    </module>
+</module>
