@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # MySQL Database for Customer and Account services
+  mysql:
+    image: mysql:8.0
+    container_name: banking-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # MongoDB for Transaction service
+  mongodb:
+    image: mongo:6.0
+    container_name: banking-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: transactions
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # Customer Microservice
+  customer-service:
+    build:
+      context: ./CustomerMs
+      dockerfile: Dockerfile
+    container_name: customer-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/customer_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - ACCOUNT_SERVICE_URL=http://account-service:8082
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Account Microservice
+  account-service:
+    build:
+      context: ./AccountMs
+      dockerfile: Dockerfile
+    container_name: account-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/account_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - CUSTOMER_SERVICE_URL=http://customer-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Transaction Microservice
+  transaction-service:
+    build:
+      context: ./TransactionMs
+      dockerfile: Dockerfile
+    container_name: transaction-service
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/transactions
+      - ACCOUNT_SERVICE_URL=http://account-service:8082
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  mongodb_data:

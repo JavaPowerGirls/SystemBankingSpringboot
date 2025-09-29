@@ -1,0 +1,1139 @@
+{
+	"info": {
+		"name": "Banking System - Complete API Collection",
+		"description": "Comprehensive Postman collection covering all endpoints for the Banking System microservices architecture",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "1.0.0"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "customerPort",
+			"value": "8081",
+			"type": "string"
+		},
+		{
+			"key": "accountPort",
+			"value": "8082",
+			"type": "string"
+		},
+		{
+			"key": "transactionPort",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accountNumber",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "sourceAccountNumber",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "destinationAccountNumber",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Customer Service",
+			"item": [
+				{
+					"name": "Create Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('clientId', responseJson.id);",
+									"    pm.test('Client created successfully', () => {",
+									"        pm.expect(responseJson.id).to.not.be.undefined;",
+									"        pm.expect(responseJson.firstName).to.eql('John');",
+									"    });",
+									"} else {",
+									"    pm.test('Client creation failed', () => {",
+									"        pm.expect.fail('Expected 201 Created');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"dni\": \"12345678\",\n    \"email\": \"john.doe@email.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Client by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Client has required fields', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('id');",
+									"    pm.expect(responseJson).to.have.property('firstName');",
+									"    pm.expect(responseJson).to.have.property('lastName');",
+									"    pm.expect(responseJson).to.have.property('dni');",
+									"    pm.expect(responseJson).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients/{{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients",
+								"{{clientId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Client updated successfully', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.firstName).to.eql('Jane');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"dni\": \"12345678\",\n    \"email\": \"jane.doe@email.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients/{{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients",
+								"{{clientId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Second Client for Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('secondClientId', responseJson.id);",
+									"    pm.test('Second client created successfully', () => {",
+									"        pm.expect(responseJson.id).to.not.be.undefined;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Smith\",\n    \"dni\": \"87654321\",\n    \"email\": \"alice.smith@email.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Account Service",
+			"item": [
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('accountNumber', responseJson.accountNumber);",
+									"    pm.test('Account created successfully', () => {",
+									"        pm.expect(responseJson.accountNumber).to.not.be.undefined;",
+									"        pm.expect(responseJson.accountType).to.eql('SAVINGS');",
+									"        pm.expect(responseJson.balance).to.eql(0.0);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": {{clientId}},\n    \"accountType\": \"SAVINGS\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Second Account for Transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.collectionVariables.set('destinationAccountNumber', responseJson.accountNumber);",
+									"    pm.test('Destination account created successfully', () => {",
+									"        pm.expect(responseJson.accountNumber).to.not.be.undefined;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": {{clientId}},\n    \"accountType\": \"CHECKING\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Accounts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Account by Number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Account has required fields', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('accountNumber');",
+									"    pm.expect(responseJson).to.have.property('balance');",
+									"    pm.expect(responseJson).to.have.property('accountType');",
+									"    pm.expect(responseJson).to.have.property('clientId');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/{{accountNumber}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{accountNumber}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Accounts by Client ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array of client accounts', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('array');",
+									"    if (responseJson.length > 0) {",
+									"        pm.expect(responseJson[0]).to.have.property('clientId');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/clients/{{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"clients",
+								"{{clientId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Deposit Money",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Balance updated correctly', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.balance).to.eql(1000.0);",
+									"});",
+									"",
+									"// Set source account for transfers",
+									"pm.collectionVariables.set('sourceAccountNumber', pm.collectionVariables.get('accountNumber'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/{{accountNumber}}/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{accountNumber}}",
+								"deposit"
+							]
+						}
+					}
+				},
+				{
+					"name": "Withdraw Money",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Balance updated correctly', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.balance).to.eql(750.0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 250.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/{{accountNumber}}/withdrawal",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{accountNumber}}",
+								"withdrawal"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Transaction Service",
+			"item": [
+				{
+					"name": "Deposit via Transaction Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Transaction response has required fields', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('transactionId');",
+									"    pm.expect(responseJson).to.have.property('accountNumber');",
+									"    pm.expect(responseJson).to.have.property('transactionType');",
+									"    pm.expect(responseJson).to.have.property('amount');",
+									"    pm.expect(responseJson.transactionType).to.eql('DEPOSIT');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 500.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions/accounts/{{accountNumber}}/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"accounts",
+								"{{accountNumber}}",
+								"deposit"
+							]
+						}
+					}
+				},
+				{
+					"name": "Withdrawal via Transaction Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Transaction response has required fields', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('transactionId');",
+									"    pm.expect(responseJson).to.have.property('accountNumber');",
+									"    pm.expect(responseJson).to.have.property('transactionType');",
+									"    pm.expect(responseJson).to.have.property('amount');",
+									"    pm.expect(responseJson.transactionType).to.eql('WITHDRAWAL');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions/accounts/{{accountNumber}}/withdrawal",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"accounts",
+								"{{accountNumber}}",
+								"withdrawal"
+							]
+						}
+					}
+				},
+				{
+					"name": "Transfer Between Accounts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Transfer transaction has required fields', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('transactionId');",
+									"    pm.expect(responseJson).to.have.property('transactionType');",
+									"    pm.expect(responseJson).to.have.property('amount');",
+									"    pm.expect(responseJson.transactionType).to.eql('TRANSFER');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAccountNumber\": \"{{sourceAccountNumber}}\",\n    \"destinationAccountNumber\": \"{{destinationAccountNumber}}\",\n    \"amount\": 200.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"accounts",
+								"transfer"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Transactions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Transaction History by Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array of account transactions', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('array');",
+									"    if (responseJson.length > 0) {",
+									"        pm.expect(responseJson[0]).to.have.property('accountNumber');",
+									"        pm.expect(responseJson[0]).to.have.property('transactionType');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions/accounts/{{accountNumber}}/history",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"accounts",
+								"{{accountNumber}}",
+								"history"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Error Scenarios & Edge Cases",
+			"item": [
+				{
+					"name": "Create Client with Invalid Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error response contains validation message', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message || responseJson.error).to.include('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Invalid\",\n    \"lastName\": \"User\",\n    \"dni\": \"12345678\",\n    \"email\": \"invalid-email\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Non-existent Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', () => {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients/99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients",
+								"99999"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Account with Invalid Client ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 404', () => {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\": 99999,\n    \"accountType\": \"SAVINGS\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					}
+				},
+				{
+					"name": "Withdraw More Than Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error indicates insufficient funds', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message || responseJson.error).to.include('insufficient' || 'balance' || 'funds');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 999999.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/{{accountNumber}}/withdrawal",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{accountNumber}}",
+								"withdrawal"
+							]
+						}
+					}
+				},
+				{
+					"name": "Deposit Negative Amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error indicates invalid amount', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message || responseJson.error).to.include('positive' || 'amount' || 'invalid');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": -100.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{accountPort}}/api/v1/accounts/{{accountNumber}}/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{accountPort}}",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{accountNumber}}",
+								"deposit"
+							]
+						}
+					}
+				},
+				{
+					"name": "Transfer to Non-existent Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 404', () => {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAccountNumber\": \"{{sourceAccountNumber}}\",\n    \"destinationAccountNumber\": \"INVALID123\",\n    \"amount\": 50.0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{transactionPort}}/api/v1/transactions/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{transactionPort}}",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								"accounts",
+								"transfer"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Delete Test Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 204', () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}:{{customerPort}}/api/v1/clients/{{clientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{customerPort}}",
+							"path": [
+								"api",
+								"v1",
+								"clients",
+								"{{clientId}}"
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

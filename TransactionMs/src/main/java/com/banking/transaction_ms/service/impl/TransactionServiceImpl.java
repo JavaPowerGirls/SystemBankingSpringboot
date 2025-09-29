@@ -47,14 +47,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Mono<TransactionResponse> withdrawal(String accountNumber, AmountRequest request) {
         return accountClient.withdrawal(accountNumber, request)
-                .then(Mono.fromCallable(() -> {
-                    return Transaction.builder()
-                            .type(TransactionType.WITHDRAWAL)
-                            .sourceAccountNumber(accountNumber)
-                            .amount(request.getAmount())
-                            .date(LocalDate.now())
-                            .build();
-                }))
+                .then(Mono.fromCallable(() -> Transaction.builder()
+                        .type(TransactionType.WITHDRAWAL)
+                        .sourceAccountNumber(accountNumber)
+                        .amount(request.getAmount())
+                        .date(LocalDate.now())
+                        .build()))
                 .flatMap(transaction -> transactionRepository.save(transaction)
                         .map(TransactionMapper::toTransactionResponse));
     }
