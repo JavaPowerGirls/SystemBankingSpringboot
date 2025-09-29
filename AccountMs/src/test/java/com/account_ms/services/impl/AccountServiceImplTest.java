@@ -131,15 +131,13 @@ class AccountServiceImplTest {
     @Test
     void withdraw() {
         when(accountRepository.findByAccountNumber(anyString())).thenReturn(Optional.of(bankAccount));
-        when(withdrawalRuleFactory.getRule(any(AccountType.class))).thenReturn(withdrawalRule);
-        doNothing().when(withdrawalRule).validate(anyDouble(), anyDouble());
+        doNothing().when(withdrawalRuleFactory).validateWithdrawal(anyDouble(), anyDouble());
         when(accountRepository.save(any(BankAccount.class))).thenReturn(bankAccount);
 
         BankAccount result = accountService.withdraw("ACC123", amountRequest);
 
         assertNotNull(result);
-        verify(withdrawalRuleFactory).getRule(AccountType.CHECKING);
-        verify(withdrawalRule).validate(anyDouble(), anyDouble());
+        verify(withdrawalRuleFactory).validateWithdrawal(anyDouble(), anyDouble());
         verify(accountRepository).save(bankAccount);
     }
 

@@ -1,6 +1,5 @@
 package com.account_ms.rules;
 
-import com.account_ms.model.AccountType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,41 +7,42 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WithdrawalRuleFactoryTest {
 
     @Mock
-    private SavingsWithdrawalRule savingsWithdrawalRule;
-
-    @Mock
-    private CheckingWithdrawalRule checkingWithdrawalRule;
+    private WithdrawalRule withdrawalRule;
 
     private WithdrawalRuleFactory withdrawalRuleFactory;
 
     // configurar factory para tests
     @BeforeEach
     void setUp() {
-        withdrawalRuleFactory = new WithdrawalRuleFactory(savingsWithdrawalRule, checkingWithdrawalRule);
+        withdrawalRuleFactory = new WithdrawalRuleFactory();
     }
 
-    // obtener regla para cuenta savings
+    // validar retiro exitoso
     @Test
-    void getRule_SavingsAccount() {
-        WithdrawalRule result = withdrawalRuleFactory.getRule(AccountType.SAVINGS);
-        assertEquals(savingsWithdrawalRule, result);
+    void validateWithdrawal_Success() {
+        withdrawalRuleFactory.setWithdrawalRule(withdrawalRule);
+        doNothing().when(withdrawalRule).validate(1000.0, 100.0);
+
+        assertDoesNotThrow(() -> withdrawalRuleFactory.validateWithdrawal(1000.0, 100.0));
+        verify(withdrawalRule).validate(1000.0, 100.0);
     }
 
-    // obtener regla para cuenta checking
+    // validar retiro sin regla configurada
     @Test
-    void getRule_CheckingAccount() {
-        WithdrawalRule result = withdrawalRuleFactory.getRule(AccountType.CHECKING);
-        assertEquals(checkingWithdrawalRule, result);
+    void validateWithdrawal_NoRuleSet() {
+        assertThrows(IllegalStateException.class, () -> withdrawalRuleFactory.validateWithdrawal(1000.0, 100.0));
     }
 
-    // tipo de cuenta no soportado
+    // configurar regla de retiro
     @Test
-    void getRule_UnsupportedAccountType() {
-        assertThrows(IllegalArgumentException.class, () -> withdrawalRuleFactory.getRule(null));
+    void setWithdrawalRule() {
+        withdrawalRuleFactory.setWithdrawalRule(withdrawalRule);
+        assertDoesNotThrow(() -> withdrawalRuleFactory.validateWithdrawal(1000.0, 100.0));
     }
 }
