@@ -8,7 +8,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -39,7 +39,7 @@ services:
       dockerfile: Dockerfile
     container_name: customer-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/customer_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/customer_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - ACCOUNT_SERVICE_URL=http://account-service:8082
@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile
     container_name: account-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/account_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/account_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - CUSTOMER_SERVICE_URL=http://customer-service:8081
